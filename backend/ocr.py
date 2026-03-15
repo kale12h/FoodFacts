@@ -4,6 +4,7 @@ import base64
 import re
 import numpy as np
 import json
+import io
 
 try:
     import onnxruntime as ort
