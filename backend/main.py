@@ -230,7 +230,7 @@ async def scan_label(
             return {"error": extracted["error"]}
 
         # Step 4: Parse nutrition data
-        parsed = parse_nutrition(extracted["text"])
+        parsed = parse_nutrition(extracted["nutrition"])
         if not parsed["success"]:
             return {"error": parsed["error"]}
 

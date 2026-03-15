@@ -48,26 +48,31 @@ HIGH_RISK_NUTRIENTS = [
 ]
 
 
-def parse_nutrition(text):
+def parse_nutrition(data):
     """
-    Takes raw text from GPT-4 and extracts nutrition values
+    Takes nutrition dict and adds daily values and percentages
     """
     try:
-        nutrition_data = {}
+        if isinstance(data, str):
+            # Old way, parse from text
+            nutrition_data = {}
 
-        nutrients = list(DAILY_VALUES.keys())
+            nutrients = list(DAILY_VALUES.keys())
 
-        for nutrient in nutrients:
-            pattern = rf'{nutrient}\s*:\s*(\d+\.?\d*|null)'
-            match = re.search(pattern, text.lower())
-            if match:
-                value = match.group(1)
-                if value == 'null':
-                    nutrition_data[nutrient] = None
+            for nutrient in nutrients:
+                pattern = rf'{nutrient}\s*:\s*(\d+\.?\d*|null)'
+                match = re.search(pattern, data.lower())
+                if match:
+                    value = match.group(1)
+                    if value == 'null':
+                        nutrition_data[nutrient] = None
+                    else:
+                        nutrition_data[nutrient] = int(float(value))
                 else:
-                    nutrition_data[nutrient] = int(float(value))
-            else:
-                nutrition_data[nutrient] = None
+                    nutrition_data[nutrient] = None
+        else:
+            # New way, data is dict
+            nutrition_data = data
 
         # Calculate daily value percentages
         percentages = {}
