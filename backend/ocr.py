@@ -218,14 +218,24 @@ Only return the JSON object, nothing else.
 
         raw_text = response.choices[0].message.content
 
+        # Clean the response to extract JSON
+        cleaned_text = raw_text.strip()
+        if cleaned_text.startswith('```json'):
+            cleaned_text = cleaned_text[7:]
+        if cleaned_text.endswith('```'):
+            cleaned_text = cleaned_text[:-3]
+        cleaned_text = cleaned_text.strip()
+
         # Parse JSON response
         try:
-            data = json.loads(raw_text)
+            data = json.loads(cleaned_text)
             product_name = data.get("product_name", "Unknown")
             product_category = data.get("product_category", "sugary_drinks")
             nutrition = data.get("nutrition", {})
             warnings = data.get("warnings", [])
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error: {e}")
+            print(f"Raw response: {raw_text}")
             # Fallback to old parsing if not JSON
             product_name = "Unknown"
             product_category = "sugary_drinks"

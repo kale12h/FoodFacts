@@ -272,7 +272,8 @@ async def scan_label(
             "health_score": health_score,
             "warnings": extracted.get("warnings", []),
             "alternatives": alternatives,
-            "raw_text": extracted["text"]
+            "raw_text": extracted["text"],
+            "debug_raw": extracted["text"]
         }
 
     except Exception as e:
