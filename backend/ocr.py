@@ -250,9 +250,6 @@ Only return the JSON object, nothing else.
             "warnings": warnings,
             "nutrition": nutrition
         }
-            "product_name": product_name,
-            "product_category": product_category
-        }
 
     except Exception as e:
         return {
