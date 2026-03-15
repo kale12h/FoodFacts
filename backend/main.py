@@ -109,7 +109,7 @@ def get_server_info(request: Request):
     
     return {
         "server_ip": local_ip,
-        "server_port": 8000,  # Default port
+        "server_port": 5000,  # Default port
         "client_ip": request.client.host
     }
 
