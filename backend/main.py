@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException, Depends
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
@@ -28,6 +28,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Logging middleware for mobile requests
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    client_ip = request.client.host
+    user_agent = request.headers.get("user-agent", "")
+    print(f"Request from {client_ip} (User-Agent: {user_agent}): {request.method} {request.url}")
+    response = await call_next(request)
+    return response
 
 # Security
 security = HTTPBearer(auto_error=False)
@@ -84,6 +93,25 @@ def require_auth(
 @app.get("/")
 def root():
     return {"message": "Nutrition Scanner API is running"}
+
+@app.get("/server-info")
+def get_server_info(request: Request):
+    """Returns server information for mobile app configuration"""
+    import socket
+    try:
+        # Get local IP address
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+    except:
+        local_ip = "127.0.0.1"
+    
+    return {
+        "server_ip": local_ip,
+        "server_port": 8000,  # Default port
+        "client_ip": request.client.host
+    }
 
 
 # ─── Auth Routes ─────────────────────────────────────────
